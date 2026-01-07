@@ -2135,13 +2135,26 @@ const App: React.FC = () => {
         supabase.from('locations').select('*').order('sort_order').order('name')
       ]);
 
-      if (catsRes.error) throw catsRes.error;
-      if (subsRes.error) throw subsRes.error;
-      if (locsRes.error) throw locsRes.error;
+      if (catsRes.error) {
+        console.error('Error fetching categories:', catsRes.error);
+        setCatError(prev => (prev ? prev + '\n' : '') + 'Erro categorias: ' + catsRes.error?.message);
+      } else {
+        setCategories(catsRes.data || []);
+      }
 
-      setCategories(catsRes.data || []);
-      setSubcategories(subsRes.data || []);
-      setLocations(locsRes.data || []);
+      if (subsRes.error) {
+        console.error('Error fetching subcategories:', subsRes.error);
+        setCatError(prev => (prev ? prev + '\n' : '') + 'Erro subcategorias: ' + subsRes.error?.message);
+      } else {
+        setSubcategories(subsRes.data || []);
+      }
+
+      if (locsRes.error) {
+        console.error('Error fetching locations:', locsRes.error);
+        setCatError(prev => (prev ? prev + '\n' : '') + 'Erro locais: ' + locsRes.error?.message);
+      } else {
+        setLocations(locsRes.data || []);
+      }
     } catch (error: any) {
       setCatError(error.message);
     } finally {
