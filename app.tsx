@@ -101,7 +101,7 @@ const App: React.FC = () => {
   const [publicError, setPublicError] = useState<string | null>(null);
 
   const [guide, setGuide] = useState({
-    app_name: 'Guia Boipeba',
+    app_name: 'O Articulador',
     whatsapp: '',
     favicon_url: '',
     splash_url: '',
@@ -230,7 +230,7 @@ const App: React.FC = () => {
     const { data, error } = await supabase.from('guide_settings').select('*').eq('id', true).single();
     if (error) setGuideError(error.message);
     else if (data) setGuide({
-      app_name: data.app_name || 'Guia Boipeba',
+      app_name: data.app_name || 'O Articulador',
       whatsapp: data.whatsapp || '',
       favicon_url: data.favicon_url || '',
       splash_url: data.splash_url || '',
@@ -3983,7 +3983,7 @@ const App: React.FC = () => {
                     <div>
                       <label className="block text-sm font-medium mb-1">Nome do App</label>
                       <input className="w-full border rounded px-3 py-2" value={guide.app_name} onChange={e => setGuide(g => ({ ...g, app_name: e.target.value }))} />
-                      <p className="mt-1 text-xs text-gray-500">Ex.: Guia Boipeba. Ao salvar, o título do site é atualizado.</p>
+                      <p className="mt-1 text-xs text-gray-500">Ex.: O Articulador. Ao salvar, o título do site é atualizado.</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">WhatsApp (somente números, com DDI)</label>

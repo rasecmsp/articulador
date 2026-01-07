@@ -7,7 +7,7 @@ interface HeaderProps {
   appName?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ onHomeClick, onAdmClick, appName = 'Guia Boipeba' }) => {
+const Header: React.FC<HeaderProps> = ({ onHomeClick, onAdmClick, appName = 'O Articulador' }) => {
   return (
     <header className="text-white shadow-lg sticky top-0 z-50" style={{ backgroundColor: '#003B63' }}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-center">
