@@ -2917,7 +2917,7 @@ const App: React.FC = () => {
                     {tab === 'photos' && 'Fotos'}
                     {tab === 'carousel' && 'Carrossel'}
                     {tab === 'categories' && 'Categorias'}
-                    {tab === 'comoChegar' && 'Articulador'}
+                    {tab === 'comoChegar' && 'Como Chegar'}
                     {tab === 'plans' && 'Planos'}
                     {tab === 'guide' && 'Dados do Guia'}
                   </button>
