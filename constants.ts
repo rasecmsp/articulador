@@ -1,12 +1,6 @@
 import { Business } from './types';
 
-export const CAROUSEL_IMAGES: string[] = [
-  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1920&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1920&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1501973801540-537f08ccae7b?q=80&w=1920&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?q=80&w=1920&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1920&auto=format&fit=crop',
-];
+
 
 export const CATEGORIES: string[] = ['Todos', 'Restaurantes', 'Pousadas', 'Passeios', 'Lojas', 'Pizzarias', 'Cafeterias', 'Livrarias'];
 

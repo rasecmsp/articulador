@@ -6,7 +6,7 @@ import BusinessList from './components/BusinessList';
 import BusinessDetail from './components/BusinessDetail';
 import Footer from './components/Footer';
 import { Business } from './types';
-import { BUSINESSES, CAROUSEL_IMAGES } from './constants';
+import { BUSINESSES } from './constants';
 import { createClient, Session } from '@supabase/supabase-js';
 import Anuncie from './components/anuncie';
 import ComoChegar from './components/ComoChegar';
@@ -4871,7 +4871,6 @@ const App: React.FC = () => {
                 cta_text: it.cta_text || undefined,
                 cta_url: it.cta_url || undefined
               })) : undefined}
-              images={carouselPublicItems.length ? undefined : CAROUSEL_IMAGES}
             />
             <div className="-mt-3">
               <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
