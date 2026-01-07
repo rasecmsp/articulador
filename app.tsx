@@ -568,14 +568,14 @@ const App: React.FC = () => {
   // FunÃ§Ãµes de autenticaÃ§Ã£o e admin
   const refreshIsAdmin = async (userId: string): Promise<boolean> => {
     try {
+      // Removed .maybeSingle() to avoid errors if there are duplicate rows in admin_users
       const { data, error } = await supabase
         .from('admin_users')
         .select('user_id')
-        .eq('user_id', userId)
-        .maybeSingle();
+        .eq('user_id', userId);
 
       if (error) throw error;
-      return !!data;
+      return Array.isArray(data) && data.length > 0;
     } catch (error) {
       console.error('Erro ao verificar admin:', error);
       return false;
