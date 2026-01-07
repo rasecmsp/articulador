@@ -88,7 +88,7 @@ const App: React.FC = () => {
   const [adminBusinesses, setAdminBusinesses] = useState<AdminBusiness[]>([]);
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminError, setAdminError] = useState<string | null>(null);
-  const [newBiz, setNewBiz] = useState<Partial<AdminBusiness>>({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '' });
+  const [newBiz, setNewBiz] = useState<Partial<AdminBusiness>>({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', plan: '' });
   const [newBizTags, setNewBizTags] = useState<string>('');
   const [newBizFiles, setNewBizFiles] = useState<File[]>([]);
   const [newBizPreviews, setNewBizPreviews] = useState<string[]>([]);
@@ -921,7 +921,8 @@ const App: React.FC = () => {
           status: 'pending',
           category_id: formCategoryId || null,
           subcategory_id: formSubcategoryId || null,
-          location_id: formLocationId || null
+          location_id: formLocationId || null,
+          plan: newBiz.plan || null
         }])
         .select('id')
         .single();
@@ -985,7 +986,7 @@ const App: React.FC = () => {
       } catch { }
 
       // Reset form
-      setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', logo: '' });
+      setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', logo: '', plan: '' });
       setNewBizTags('');
       setNewBizFiles([]);
       setNewBizPreviews([]);
@@ -1022,7 +1023,8 @@ const App: React.FC = () => {
           tags: newBizTags.split(',').map(t => t.trim()).filter(Boolean),
           category_id: formCategoryId || null,
           subcategory_id: formSubcategoryId || null,
-          location_id: formLocationId || null
+          location_id: formLocationId || null,
+          plan: newBiz.plan || null
         })
         .eq('id', editingId)
         .select('id')
@@ -1070,7 +1072,7 @@ const App: React.FC = () => {
       setNewBizPreviews([]);
       setLogoFile(null);
       setLogoPreview('');
-      setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', logo: '' });
+      setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', logo: '', plan: '' });
       setNewBizTags('');
       setFormCategoryId('');
       setFormSubcategoryId('');
@@ -3021,8 +3023,10 @@ const App: React.FC = () => {
                                   phone: (b as any).phone,
                                   whatsapp: (b as any).whatsapp,
                                   instagram: (b as any).instagram,
+                                  interaction: (b as any).interaction,
                                   tripadvisor: (b as any).tripadvisor,
-                                  website: (b as any).website
+                                  website: (b as any).website,
+                                  plan: b.plan || ''
                                 });
                                 setNewBizTags(Array.isArray((b as any).tags) ? (b as any).tags.join(', ') : '');
                                 setNewBizFiles([]);
@@ -3087,6 +3091,19 @@ const App: React.FC = () => {
                         value={newBiz.name || ''}
                         onChange={(e) => setNewBiz((v) => ({ ...v, name: e.target.value }))}
                       />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Plano</label>
+                      <select
+                        className="w-full border rounded px-3 py-2"
+                        value={newBiz.plan || ''}
+                        onChange={(e) => setNewBiz((v) => ({ ...v, plan: e.target.value }))}
+                      >
+                        <option value="">Sem plano (Gratuito/Básico)</option>
+                        {plans.map(p => (
+                          <option key={p.id} value={p.slug}>{p.name} ({p.months} meses)</option>
+                        ))}
+                      </select>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div className="space-y-6">
@@ -3270,7 +3287,7 @@ const App: React.FC = () => {
                           type="button"
                           onClick={() => {
                             setEditingId(null);
-                            setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '' });
+                            setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', plan: '' });
                             setNewBizTags('');
                             setNewBizFiles([]);
                             setNewBizPreviews([]);
