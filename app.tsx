@@ -4359,13 +4359,21 @@ const App: React.FC = () => {
                           className="bg-cyan-700 text-white px-3 py-2 rounded"
                           onClick={async () => {
                             if (!newCategoryName.trim()) return;
-                            const nextOrder = Math.max(0, ...categories.map((c: any) => (c.sort_order ?? 0))) + 1;
-                            const { error } = await supabase.from('categories').insert({ name: newCategoryName.trim(), sort_order: nextOrder });
-                            if (!error) {
+                            setCatLoading(true);
+                            setCatError(null);
+                            try {
+                              const nextOrder = categories.length > 0
+                                ? Math.max(0, ...categories.map((c: any) => (c.sort_order ?? 0))) + 1
+                                : 1;
+                              const { error } = await supabase.from('categories').insert([{ name: newCategoryName.trim(), sort_order: nextOrder }]);
+                              if (error) throw error;
                               setNewCategoryName('');
                               await fetchAdminTaxonomies();
-                            } else {
-                              setCatError(error.message);
+                            } catch (err: any) {
+                              console.error('Erro ao criar categoria:', err);
+                              setCatError(err.message || 'Erro ao criar categoria');
+                            } finally {
+                              setCatLoading(false);
                             }
                           }}
                         >
@@ -4394,13 +4402,22 @@ const App: React.FC = () => {
                           className="bg-cyan-700 text-white px-3 py-2 rounded"
                           onClick={async () => {
                             if (!newSubcategoryName.trim() || !newSubcategoryCatId) return;
-                            const nextOrder = Math.max(0, ...subcategories.filter(s => s.category_id === newSubcategoryCatId).map((s: any) => (s.sort_order ?? 0))) + 1;
-                            const { error } = await supabase.from('subcategories').insert({ name: newSubcategoryName.trim(), category_id: newSubcategoryCatId, sort_order: nextOrder });
-                            if (!error) {
+                            setCatLoading(true);
+                            setCatError(null);
+                            try {
+                              const sameCat = subcategories.filter(s => s.category_id === newSubcategoryCatId);
+                              const nextOrder = sameCat.length > 0
+                                ? Math.max(0, ...sameCat.map((s: any) => (s.sort_order ?? 0))) + 1
+                                : 1;
+                              const { error } = await supabase.from('subcategories').insert([{ name: newSubcategoryName.trim(), category_id: newSubcategoryCatId, sort_order: nextOrder }]);
+                              if (error) throw error;
                               setNewSubcategoryName('');
                               await fetchAdminTaxonomies();
-                            } else {
-                              setCatError(error.message);
+                            } catch (err: any) {
+                              console.error('Erro ao criar subcategoria:', err);
+                              setCatError(err.message || 'Erro ao criar subcategoria');
+                            } finally {
+                              setCatLoading(false);
                             }
                           }}
                         >
@@ -4420,13 +4437,21 @@ const App: React.FC = () => {
                           className="bg-cyan-700 text-white px-3 py-2 rounded"
                           onClick={async () => {
                             if (!newLocationName.trim()) return;
-                            const nextOrder = Math.max(0, ...locations.map((l: any) => (l.sort_order ?? 0))) + 1;
-                            const { error } = await supabase.from('locations').insert({ name: newLocationName.trim(), sort_order: nextOrder });
-                            if (!error) {
+                            setCatLoading(true);
+                            setCatError(null);
+                            try {
+                              const nextOrder = locations.length > 0
+                                ? Math.max(0, ...locations.map((l: any) => (l.sort_order ?? 0))) + 1
+                                : 1;
+                              const { error } = await supabase.from('locations').insert([{ name: newLocationName.trim(), sort_order: nextOrder }]);
+                              if (error) throw error;
                               setNewLocationName('');
                               await fetchAdminTaxonomies();
-                            } else {
-                              setCatError(error.message);
+                            } catch (err: any) {
+                              console.error('Erro ao criar local:', err);
+                              setCatError(err.message || 'Erro ao criar local');
+                            } finally {
+                              setCatLoading(false);
                             }
                           }}
                         >
