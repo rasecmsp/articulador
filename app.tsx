@@ -1229,6 +1229,12 @@ const App: React.FC = () => {
         } as Business;
       });
 
+      // Shuffle for random display on refresh
+      for (let i = businesses.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [businesses[i], businesses[j]] = [businesses[j], businesses[i]];
+      }
+
       setPublicBusinesses(businesses);
     } catch (error: any) {
       setPublicError(error.message);
@@ -2702,7 +2708,7 @@ const App: React.FC = () => {
   // Filtered businesses for home page
   const filteredBusinesses = useMemo(() => {
     const q = normalizeForSearch(searchTerm);
-    return publicBusinesses.filter(business => {
+    const filtered = publicBusinesses.filter(business => {
       const nameN = normalizeForSearch(business.name);
       const catN = normalizeForSearch(business.category);
       const descN = normalizeForSearch(business.description || '');
@@ -2717,6 +2723,9 @@ const App: React.FC = () => {
 
       return matchesSearch && matchesCategory && matchesSubcategory && matchesLocation && matchesRating;
     });
+
+    const isFilterActive = q || homeCategoryId || homeSubcategoryId || homeLocationId || homeRatingMin > 0;
+    return isFilterActive ? filtered : filtered.slice(0, 6);
   }, [publicBusinesses, searchTerm, homeCategoryId, homeSubcategoryId, homeLocationId, homeRatingMin]);
 
   // Businesses in category "Passeios & Atividades" (for Tours page)
