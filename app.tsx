@@ -2905,8 +2905,8 @@ const App: React.FC = () => {
                     key={tab}
                     onClick={() => setAdminTab(tab)}
                     className={`px-4 py-2 rounded ${adminTab === tab
-                        ? 'bg-cyan-700 text-white'
-                        : 'bg-gray-100 text-gray-700'
+                      ? 'bg-cyan-700 text-white'
+                      : 'bg-gray-100 text-gray-700'
                       }`}
                   >
                     {tab === 'businesses' && 'Cadastros'}
@@ -2917,7 +2917,7 @@ const App: React.FC = () => {
                     {tab === 'photos' && 'Fotos'}
                     {tab === 'carousel' && 'Carrossel'}
                     {tab === 'categories' && 'Categorias'}
-                    {tab === 'comoChegar' && 'Como Chegar'}
+                    {tab === 'comoChegar' && 'Guias Impressos'}
                     {tab === 'plans' && 'Planos'}
                     {tab === 'guide' && 'Dados do Guia'}
                   </button>
@@ -2940,8 +2940,8 @@ const App: React.FC = () => {
                             <div className="flex items-center gap-2">
                               <h4 className="font-medium">{b.name}</h4>
                               <span className={`text-xs px-2 py-0.5 rounded ${b.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                  b.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                    'bg-red-100 text-red-800'
+                                b.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                  'bg-red-100 text-red-800'
                                 }`}>
                                 {b.status}
                               </span>

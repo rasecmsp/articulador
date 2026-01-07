@@ -229,7 +229,7 @@ const AdminComoChegar: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-4">
-        <h2 className="text-lg font-semibold mb-3">Conteúdo - Como Chegar</h2>
+        <h2 className="text-lg font-semibold mb-3">Conteúdo - Guias Impressos</h2>
         {err && <p className="text-red-600 text-sm mb-3">{err}</p>}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -318,7 +318,7 @@ const AdminComoChegar: React.FC = () => {
               <div key={r.id} className="flex items-center justify-between gap-3 border rounded px-3 py-2">
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-gray-400 w-6 text-right">{(r.sort_order ?? idx) + 1}</span>
-                  <img src={(r as any).images?.[0] || r.image_url || ''} className="w-10 h-10 rounded object-cover border" onError={(e)=>{(e.target as HTMLImageElement).style.visibility='hidden';}} />
+                  <img src={(r as any).images?.[0] || r.image_url || ''} className="w-10 h-10 rounded object-cover border" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
                   <div className="flex flex-col">
                     <span className="font-medium">{r.title}</span>
                     <span className="text-xs text-gray-500">{r.visible ? 'Visível' : 'Oculta'} • {r.bullets?.length || 0} itens</span>
