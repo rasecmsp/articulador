@@ -2801,7 +2801,8 @@ const App: React.FC = () => {
         }
       } else {
         setIsAdmin(false);
-        setAdminNotice('Seu usuário não tem permissão de administrador.');
+        setIsAdmin(false);
+        setAdminNotice(`Seu usuário (${sess.user.id}) não tem permissão de administrador. Verifique se este ID está na tabela admin_users.`);
       }
     });
 
