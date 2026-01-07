@@ -227,16 +227,21 @@ const App: React.FC = () => {
 
   const fetchGuideSettings = async () => {
     setGuideLoading(true); setGuideError(null);
-    const { data, error } = await supabase.from('guide_settings').select('*').eq('id', true).single();
-    if (error) setGuideError(error.message);
-    else if (data) setGuide({
-      app_name: data.app_name || 'O Articulador',
-      whatsapp: data.whatsapp || '',
-      favicon_url: data.favicon_url || '',
-      splash_url: data.splash_url || '',
-      app_icon_url: data.app_icon_url || ''
-    });
-    setGuideLoading(false);
+    try {
+      const { data, error } = await supabase.from('guide_settings').select('*').limit(1).maybeSingle();
+      if (error && error.code !== 'PGRST116') setGuideError(error.message);
+      else if (data) setGuide({
+        app_name: data.app_name || 'O Articulador',
+        whatsapp: data.whatsapp || '',
+        favicon_url: data.favicon_url || '',
+        splash_url: data.splash_url || '',
+        app_icon_url: data.app_icon_url || ''
+      });
+    } catch (error: any) {
+      console.error(error);
+    } finally {
+      setGuideLoading(false);
+    }
   };
 
   const uploadBrandFile = async (file: File, kind: 'favicon' | 'splash' | 'icon') => {
@@ -257,8 +262,19 @@ const App: React.FC = () => {
       if (splashFile) splash_url = await uploadBrandFile(splashFile, 'splash');
       if (iconFile) app_icon_url = await uploadBrandFile(iconFile, 'icon');
 
-      const payload = { id: true, app_name: guide.app_name, whatsapp: guide.whatsapp, favicon_url, splash_url, app_icon_url, updated_at: new Date().toISOString() };
-      const { error } = await supabase.from('guide_settings').upsert(payload).eq('id', true);
+      const { data: existing } = await supabase.from('guide_settings').select('id').limit(1).maybeSingle();
+
+      const payload = { app_name: guide.app_name, whatsapp: guide.whatsapp, favicon_url, splash_url, app_icon_url, updated_at: new Date().toISOString() };
+
+      let error;
+      if (existing) {
+        const { error: upErr } = await supabase.from('guide_settings').update(payload).eq('id', existing.id);
+        error = upErr;
+      } else {
+        const { error: inErr } = await supabase.from('guide_settings').insert([payload]);
+        error = inErr;
+      }
+
       if (error) throw error;
       setGuide(g => ({ ...g, favicon_url, splash_url, app_icon_url }));
 
@@ -1483,7 +1499,7 @@ const App: React.FC = () => {
     }
   };
 
-  // FunÃ§Ãµes para carousel
+  // Funções para carousel
   const fetchPublicCarouselItems = async () => {
     try {
       const { data, error } = await supabase
