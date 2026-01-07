@@ -4378,8 +4378,12 @@ const App: React.FC = () => {
                               const nextOrder = categories.length > 0
                                 ? Math.max(0, ...categories.map((c: any) => (c.sort_order ?? 0))) + 1
                                 : 1;
-                              const { error } = await supabase.from('categories').insert([{ name: newCategoryName.trim(), sort_order: nextOrder }]);
+                              const { data, error } = await supabase.from('categories').insert([{ name: newCategoryName.trim(), sort_order: nextOrder }]).select();
                               if (error) throw error;
+                              if (!data || data.length === 0) {
+                                console.warn('Inserção bem-sucedida, mas nenhum dado retornado.');
+                                alert('Categoria criada, mas não retornada pelo banco. Verifique permissões (RLS).');
+                              }
                               setNewCategoryName('');
                               await fetchAdminTaxonomies();
                             } catch (err: any) {
