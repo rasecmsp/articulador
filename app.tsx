@@ -358,6 +358,7 @@ const App: React.FC = () => {
       fav.href = guide.favicon_url;
     }
     if (guide.app_icon_url) {
+      // Atualiza ícone Apple Touch (iOS)
       let apple = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]#dynamic-apple-icon');
       if (!apple) {
         apple = document.createElement('link');
@@ -366,6 +367,45 @@ const App: React.FC = () => {
         document.head.appendChild(apple);
       }
       apple.href = guide.app_icon_url;
+
+      // Atualiza Manifest dinamicamente (Android / PWA)
+      const manifest = {
+        name: guide.app_name || 'Guia',
+        short_name: guide.app_name || 'Guia',
+        start_url: '/',
+        display: 'standalone',
+        background_color: '#ffffff',
+        theme_color: '#ffffff',
+        icons: [
+          {
+            src: guide.app_icon_url,
+            sizes: "192x192",
+            type: "image/png"
+          },
+          {
+            src: guide.app_icon_url,
+            sizes: "512x512",
+            type: "image/png"
+          }
+        ]
+      };
+
+      const stringManifest = JSON.stringify(manifest);
+      const blob = new Blob([stringManifest], { type: 'application/json' });
+      const manifestUrl = URL.createObjectURL(blob);
+
+      let manifestLink = document.querySelector<HTMLLinkElement>('link[rel="manifest"]#dynamic-manifest');
+      if (!manifestLink) {
+        // Remove manifest estático se existir para evitar conflito
+        const staticManifest = document.querySelector('link[rel="manifest"]:not(#dynamic-manifest)');
+        if (staticManifest) staticManifest.remove();
+
+        manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.id = 'dynamic-manifest';
+        document.head.appendChild(manifestLink);
+      }
+      manifestLink.href = manifestUrl;
     }
   }, [guide]);
 
