@@ -357,6 +357,16 @@ const App: React.FC = () => {
       }
       fav.href = guide.favicon_url;
     }
+    if (guide.app_icon_url) {
+      let apple = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]#dynamic-apple-icon');
+      if (!apple) {
+        apple = document.createElement('link');
+        apple.rel = 'apple-touch-icon';
+        apple.id = 'dynamic-apple-icon';
+        document.head.appendChild(apple);
+      }
+      apple.href = guide.app_icon_url;
+    }
   }, [guide]);
 
   const getPlanLabel = (slug?: string | null) => {
