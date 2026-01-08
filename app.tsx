@@ -264,7 +264,7 @@ const App: React.FC = () => {
 
       const { data: existing } = await supabase.from('guide_settings').select('id').limit(1).maybeSingle();
 
-      const payload = { app_name: guide.app_name, whatsapp: guide.whatsapp, favicon_url, splash_url, app_icon_url, updated_at: new Date().toISOString() };
+      const payload = { app_name: guide.app_name, whatsapp: guide.whatsapp, favicon_url, splash_url, app_icon_url };
 
       let error;
       if (existing) {
