@@ -373,7 +373,7 @@ const BusinessDetail: React.FC<BusinessDetailProps> = ({ business, onBack, other
           <MegaphoneIcon className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-xl font-bold text-white">Destaque seu negócio!</h3>
-        <p className="text-white mt-1 mb-4">Faça parte do guia mais completo de Boipeba. Torne-se Premium!</p>
+        <p className="text-white mt-1 mb-4">Faça parte do guia mais completo da cidade. Torne-se Premium!</p>
         <a
           href={whatsappForCTA ? `https://wa.me/${whatsappForCTA}` : 'https://wa.me/${whatsappForCTA'}
           target="_blank"
