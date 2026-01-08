@@ -335,7 +335,29 @@ const App: React.FC = () => {
     if (adminTab === 'plans' || adminTab === 'businesses') {
       fetchPlans();
     }
+    if (adminTab === 'guide') {
+      fetchGuideSettings();
+    }
   }, [adminTab]);
+
+  // Carrega configurações ao iniciar e aplica visualmente
+  useEffect(() => {
+    fetchGuideSettings();
+  }, []);
+
+  useEffect(() => {
+    if (guide.app_name) document.title = guide.app_name;
+    if (guide.favicon_url) {
+      let fav = document.querySelector<HTMLLinkElement>('link[rel="icon"]#dynamic-favicon');
+      if (!fav) {
+        fav = document.createElement('link');
+        fav.rel = 'icon';
+        fav.id = 'dynamic-favicon';
+        document.head.appendChild(fav);
+      }
+      fav.href = guide.favicon_url;
+    }
+  }, [guide]);
 
   const getPlanLabel = (slug?: string | null) => {
     if (!slug) return '—';
