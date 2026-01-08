@@ -278,7 +278,7 @@ const BusinessDetail: React.FC<BusinessDetailProps> = ({ business, onBack, other
 
         {business.whatsapp?.trim() && (
           <a href={`https://wa.me/${business.whatsapp}`} target="_blank" rel="noopener noreferrer" className="mt-6 w-full bg-[#003B63] text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-cyan-400 transition-colors duration-300 flex items-center justify-center gap-2">
-            Fazer Reserva
+            Entrar em contato
           </a>
         )}
 
