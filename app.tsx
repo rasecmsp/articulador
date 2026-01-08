@@ -116,7 +116,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (guide.splash_url && showSplash) {
-      const timer = setTimeout(() => setShowSplash(false), 3000);
+      const timer = setTimeout(() => setShowSplash(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [guide.splash_url, showSplash]);
