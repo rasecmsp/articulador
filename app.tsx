@@ -112,6 +112,14 @@ const App: React.FC = () => {
   const [faviconFile, setFaviconFile] = useState<File | null>(null);
   const [splashFile, setSplashFile] = useState<File | null>(null);
   const [iconFile, setIconFile] = useState<File | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    if (guide.splash_url && showSplash) {
+      const timer = setTimeout(() => setShowSplash(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [guide.splash_url, showSplash]);
 
   const whatsappDigits = (guide.whatsapp || '').replace(/\D/g, '');
 
@@ -2948,6 +2956,18 @@ const App: React.FC = () => {
 
   return (
     <div className="bg-orange-50 min-h-screen font-sans" style={{ backgroundColor: view === 'none' ? '#ebf7f6ff' : undefined }}>
+      {showSplash && guide.splash_url && view !== 'login' && view !== 'admin' && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-white"
+          onClick={() => setShowSplash(false)}
+        >
+          <img
+            src={guide.splash_url}
+            alt="Abertura"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
       <div className="hidden" />
       <main className="pb-24">
         {view === 'login' ? (
