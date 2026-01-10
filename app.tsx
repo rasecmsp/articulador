@@ -415,15 +415,18 @@ const App: React.FC = () => {
       }
       manifestLink.href = manifestUrl;
 
-      // Atualiza Open Graph Image (Link Sharing)
-      let ogImage = document.querySelector<HTMLMetaElement>('meta[property="og:image"]#dynamic-og-image');
+      // Atualiza Open Graph Image (Link Sharing) - Client Side
+      // Nota: Crawlers (WhatsApp, fb) não leem isso, leem o estático no index.html.
+      // Isso serve para debug local ou SPAs que hidratam meta tags.
+      let ogImage = document.querySelector<HTMLMetaElement>('meta[property="og:image"]');
       if (!ogImage) {
         ogImage = document.createElement('meta');
         ogImage.setAttribute('property', 'og:image');
-        ogImage.id = 'dynamic-og-image';
         document.head.appendChild(ogImage);
       }
-      ogImage.content = guide.app_icon_url;
+      if (guide.app_icon_url) {
+        ogImage.content = guide.app_icon_url;
+      }
     }
   }, [guide]);
 
