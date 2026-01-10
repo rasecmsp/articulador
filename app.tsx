@@ -414,19 +414,6 @@ const App: React.FC = () => {
         document.head.appendChild(manifestLink);
       }
       manifestLink.href = manifestUrl;
-
-      // Atualiza Open Graph Image (Link Sharing) - Client Side
-      // Nota: Crawlers (WhatsApp, fb) não leem isso, leem o estático no index.html.
-      // Isso serve para debug local ou SPAs que hidratam meta tags.
-      let ogImage = document.querySelector<HTMLMetaElement>('meta[property="og:image"]');
-      if (!ogImage) {
-        ogImage = document.createElement('meta');
-        ogImage.setAttribute('property', 'og:image');
-        document.head.appendChild(ogImage);
-      }
-      if (guide.app_icon_url) {
-        ogImage.content = guide.app_icon_url;
-      }
     }
   }, [guide]);
 
