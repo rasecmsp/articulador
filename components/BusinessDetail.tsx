@@ -303,9 +303,9 @@ const BusinessDetail: React.FC<BusinessDetailProps> = ({ business, onBack, other
                   <img src="https://img.icons8.com/external-tal-revivo-color-tal-revivo/96/external-tripadvisor-the-ultimate-travel-companion-travel-planning-tool-logo-color-tal-revivo.png" alt="TripAdvisor" className="w-7 h-7" />
                 </a>
               )}
-              {business.address?.trim() && (
+              {(business.map_url?.trim() || business.address?.trim()) && (
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
+                  href={business.map_url?.trim() ? business.map_url : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:opacity-90"

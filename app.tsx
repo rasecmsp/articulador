@@ -28,6 +28,7 @@ interface AdminBusiness {
   instagram?: string;
   tripadvisor?: string;
   website?: string;
+  map_url?: string;
   logo?: string;
   created_at?: string;
   category_id?: string | null;
@@ -88,7 +89,7 @@ const App: React.FC = () => {
   const [adminBusinesses, setAdminBusinesses] = useState<AdminBusiness[]>([]);
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminError, setAdminError] = useState<string | null>(null);
-  const [newBiz, setNewBiz] = useState<Partial<AdminBusiness>>({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', plan: '' });
+  const [newBiz, setNewBiz] = useState<Partial<AdminBusiness>>({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', map_url: '', plan: '' });
   const [newBizTags, setNewBizTags] = useState<string>('');
   const [newBizFiles, setNewBizFiles] = useState<File[]>([]);
   const [newBizPreviews, setNewBizPreviews] = useState<string[]>([]);
@@ -1014,6 +1015,7 @@ const App: React.FC = () => {
           instagram: newBiz.instagram,
           tripadvisor: newBiz.tripadvisor || null,
           website: newBiz.website || null,
+          map_url: newBiz.map_url || null,
           tags: newBizTags.split(',').map(t => t.trim()).filter(Boolean),
           logo: null, // serÃ¡ atualizado apÃ³s upload se houver logoFile
           status: 'pending',
@@ -1084,7 +1086,7 @@ const App: React.FC = () => {
       } catch { }
 
       // Reset form
-      setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', logo: '', plan: '' });
+      setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', logo: '', map_url: '', plan: '' });
       setNewBizTags('');
       setNewBizFiles([]);
       setNewBizPreviews([]);
@@ -1118,6 +1120,7 @@ const App: React.FC = () => {
           instagram: newBiz.instagram,
           tripadvisor: newBiz.tripadvisor || null,
           website: newBiz.website || null,
+          map_url: newBiz.map_url || null,
           tags: newBizTags.split(',').map(t => t.trim()).filter(Boolean),
           category_id: formCategoryId || null,
           subcategory_id: formSubcategoryId || null,
@@ -1170,7 +1173,7 @@ const App: React.FC = () => {
       setNewBizPreviews([]);
       setLogoFile(null);
       setLogoPreview('');
-      setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', logo: '', plan: '' });
+      setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', logo: '', map_url: '', plan: '' });
       setNewBizTags('');
       setFormCategoryId('');
       setFormSubcategoryId('');
@@ -1327,6 +1330,7 @@ const App: React.FC = () => {
           whatsapp: b.whatsapp ?? '',
           instagram: b.instagram ?? '',
           website: b.website ?? '',
+          map_url: b.map_url ?? '',
           tripadvisor: b.tripadvisor ?? '',
           logo: (typeof b.logo === 'string' && b.logo) ? b.logo : '',
           images: imagesArray.length > 0 ? imagesArray : [PUBLIC_PLACEHOLDER_IMG],
@@ -3136,6 +3140,7 @@ const App: React.FC = () => {
                                   interaction: (b as any).interaction,
                                   tripadvisor: (b as any).tripadvisor,
                                   website: (b as any).website,
+                                  map_url: (b as any).map_url,
                                   plan: b.plan || ''
                                 });
                                 setNewBizTags(Array.isArray((b as any).tags) ? (b as any).tags.join(', ') : '');
@@ -3373,6 +3378,15 @@ const App: React.FC = () => {
                           onChange={(e) => setNewBiz((v) => ({ ...v, website: e.target.value }))}
                         />
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Link do Mapa (Google Maps)</label>
+                        <input
+                          className="w-full border rounded px-3 py-2"
+                          placeholder="https://maps.google.com/..."
+                          value={newBiz.map_url || ''}
+                          onChange={(e) => setNewBiz((v) => ({ ...v, map_url: e.target.value }))}
+                        />
+                      </div>
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium mb-1">Tags (separe por virgula)</label>
                         <input
@@ -3397,7 +3411,7 @@ const App: React.FC = () => {
                           type="button"
                           onClick={() => {
                             setEditingId(null);
-                            setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', plan: '' });
+                            setNewBiz({ name: '', category: '', description: '', address: '', phone: '', whatsapp: '', instagram: '', tripadvisor: '', website: '', map_url: '', plan: '' });
                             setNewBizTags('');
                             setNewBizFiles([]);
                             setNewBizPreviews([]);

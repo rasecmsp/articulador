@@ -21,6 +21,7 @@ export interface Business {
   instagram: string;
   tripadvisor?: string;
   website?: string;
+  map_url?: string;
   logo?: string;
   images: string[];
   reviews: Review[];
