@@ -4174,6 +4174,12 @@ const App: React.FC = () => {
                       <p className="mt-1 text-xs text-gray-500">PNG 512x512 com fundo transparente.</p>
                       {guide.app_icon_url && <img src={guide.app_icon_url} className="mt-2 w-16 h-16 object-cover rounded border" />}
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Imagem de Compartilhamento (Link)</label>
+                      <input type="file" accept="image/png,image/jpeg" onChange={e => setShareImageFile(e.target.files?.[0] || null)} />
+                      <p className="mt-1 text-xs text-gray-500">Esta é a imagem que aparecerá no WhatsApp/Facebook.</p>
+                      {guide.share_image_url && <img src={guide.share_image_url} className="mt-2 w-48 rounded border shadow-sm" />}
+                    </div>
                     <div className="flex gap-2">
                       <button disabled={guideLoading} className="bg-cyan-700 text-white px-4 py-2 rounded disabled:opacity-60">Salvar</button>
                     </div>
