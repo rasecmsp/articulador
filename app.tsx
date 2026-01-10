@@ -4177,7 +4177,7 @@ const App: React.FC = () => {
                     <div>
                       <label className="block text-sm font-medium mb-1">Imagem de Compartilhamento (Link)</label>
                       <input type="file" accept="image/png,image/jpeg" onChange={e => setShareImageFile(e.target.files?.[0] || null)} />
-                      <p className="mt-1 text-xs text-gray-500">Esta é a imagem que aparecerá no WhatsApp/Facebook.</p>
+                      <p className="mt-1 text-xs text-gray-500">Esta é a imagem que aparecerá no WhatsApp/Facebook. Tamanho recomendado: 1200x630 px.</p>
                       {guide.share_image_url && <img src={guide.share_image_url} className="mt-2 w-48 rounded border shadow-sm" />}
                     </div>
                     <div className="flex gap-2">
