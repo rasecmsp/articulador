@@ -105,13 +105,15 @@ const App: React.FC = () => {
     whatsapp: '',
     favicon_url: '',
     splash_url: '',
-    app_icon_url: ''
+    app_icon_url: '',
+    share_image_url: ''
   });
   const [guideLoading, setGuideLoading] = useState(false);
   const [guideError, setGuideError] = useState<string | null>(null);
   const [faviconFile, setFaviconFile] = useState<File | null>(null);
   const [splashFile, setSplashFile] = useState<File | null>(null);
   const [iconFile, setIconFile] = useState<File | null>(null);
+  const [shareImageFile, setShareImageFile] = useState<File | null>(null);
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
@@ -243,7 +245,8 @@ const App: React.FC = () => {
         whatsapp: data.whatsapp || '',
         favicon_url: data.favicon_url || '',
         splash_url: data.splash_url || '',
-        app_icon_url: data.app_icon_url || ''
+        app_icon_url: data.app_icon_url || '',
+        share_image_url: data.share_image_url || ''
       });
     } catch (error: any) {
       console.error(error);
@@ -252,7 +255,7 @@ const App: React.FC = () => {
     }
   };
 
-  const uploadBrandFile = async (file: File, kind: 'favicon' | 'splash' | 'icon') => {
+  const uploadBrandFile = async (file: File, kind: 'favicon' | 'splash' | 'icon' | 'share') => {
     const ext = file.name.split('.').pop() || 'png';
     const name = `branding/${kind}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage.from('site-media').upload(name, file, { cacheControl: '3600', upsert: false, contentType: file.type });
@@ -265,14 +268,28 @@ const App: React.FC = () => {
     e.preventDefault();
     try {
       setGuideLoading(true); setGuideError(null);
-      let { favicon_url, splash_url, app_icon_url } = guide;
+      let { favicon_url, splash_url, app_icon_url, share_image_url } = guide;
+
+      let newShareUrl = share_image_url;
+
       if (faviconFile) favicon_url = await uploadBrandFile(faviconFile, 'favicon');
       if (splashFile) splash_url = await uploadBrandFile(splashFile, 'splash');
       if (iconFile) app_icon_url = await uploadBrandFile(iconFile, 'icon');
+      if (shareImageFile) {
+        newShareUrl = await uploadBrandFile(shareImageFile, 'share');
+      }
 
       const { data: existing } = await supabase.from('guide_settings').select('id').limit(1).maybeSingle();
 
-      const payload = { app_name: guide.app_name, whatsapp: guide.whatsapp, favicon_url, splash_url, app_icon_url, updated_at: new Date().toISOString() };
+      const payload: any = {
+        app_name: guide.app_name,
+        whatsapp: guide.whatsapp,
+        favicon_url,
+        splash_url,
+        app_icon_url,
+        share_image_url: newShareUrl,
+        updated_at: new Date().toISOString()
+      };
 
       let error;
       if (existing) {
@@ -284,7 +301,8 @@ const App: React.FC = () => {
       }
 
       if (error) throw error;
-      setGuide(g => ({ ...g, favicon_url, splash_url, app_icon_url }));
+
+      setGuide(g => ({ ...g, favicon_url, splash_url, app_icon_url, share_image_url: newShareUrl }));
 
       // Atualiza título e favicon dinâmico
       document.title = guide.app_name || 'Guia';
@@ -295,7 +313,7 @@ const App: React.FC = () => {
       // Recarrega do banco para refletir exatamente o persistido
       await fetchGuideSettings();
       alert('Dados do Guia salvos com sucesso.');
-      setFaviconFile(null); setSplashFile(null); setIconFile(null);
+      setFaviconFile(null); setSplashFile(null); setIconFile(null); setShareImageFile(null);
     } catch (err: any) {
       setGuideError(err.message || 'Falha ao salvar Dados do Guia');
     } finally {
