@@ -95,6 +95,7 @@ const App: React.FC = () => {
   const [newBizPreviews, setNewBizPreviews] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | number | null>(null);
+  const [adminSearchTerm, setAdminSearchTerm] = useState('');
 
   const [publicBusinesses, setPublicBusinesses] = useState<Business[]>([]);
   const [publicBusinessesRaw, setPublicBusinessesRaw] = useState<any[]>([]);
@@ -3084,12 +3085,27 @@ const App: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-white rounded-lg shadow p-4">
                   <h3 className="font-semibold mb-4">Cadastros</h3>
+                  <div className="mb-4">
+                    <input
+                      type="text"
+                      className="w-full border rounded px-3 py-2 text-sm"
+                      placeholder="Pesquisar por nome ou categoria..."
+                      value={adminSearchTerm}
+                      onChange={(e) => setAdminSearchTerm(e.target.value)}
+                    />
+                  </div>
                   {adminLoading ? (
                     <p>Carregando...</p>
                   ) : (
                     <div className="space-y-3">
-                      {adminBusinesses.length === 0 && <p className="text-sm text-gray-600">Nenhum cadastro encontrado.</p>}
-                      {adminBusinesses.map((b) => (
+                      {adminBusinesses.filter(b => {
+                        const q = adminSearchTerm.toLowerCase();
+                        return !q || b.name.toLowerCase().includes(q) || b.category.toLowerCase().includes(q);
+                      }).length === 0 && <p className="text-sm text-gray-600">Nenhum cadastro encontrado.</p>}
+                      {adminBusinesses.filter(b => {
+                        const q = adminSearchTerm.toLowerCase();
+                        return !q || b.name.toLowerCase().includes(q) || b.category.toLowerCase().includes(q);
+                      }).map((b) => (
                         <div key={b.id} className="border rounded p-3 flex items-start justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
