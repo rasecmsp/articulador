@@ -414,6 +414,16 @@ const App: React.FC = () => {
         document.head.appendChild(manifestLink);
       }
       manifestLink.href = manifestUrl;
+
+      // Atualiza Open Graph Image (Link Sharing)
+      let ogImage = document.querySelector<HTMLMetaElement>('meta[property="og:image"]#dynamic-og-image');
+      if (!ogImage) {
+        ogImage = document.createElement('meta');
+        ogImage.setAttribute('property', 'og:image');
+        ogImage.id = 'dynamic-og-image';
+        document.head.appendChild(ogImage);
+      }
+      ogImage.content = guide.app_icon_url;
     }
   }, [guide]);
 
