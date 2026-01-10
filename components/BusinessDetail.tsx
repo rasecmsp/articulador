@@ -303,6 +303,17 @@ const BusinessDetail: React.FC<BusinessDetailProps> = ({ business, onBack, other
                   <img src="https://img.icons8.com/external-tal-revivo-color-tal-revivo/96/external-tripadvisor-the-ultimate-travel-companion-travel-planning-tool-logo-color-tal-revivo.png" alt="TripAdvisor" className="w-7 h-7" />
                 </a>
               )}
+              {business.address?.trim() && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-500 hover:opacity-90"
+                  title="Ver no Mapa"
+                >
+                  <img src="https://img.icons8.com/color/96/google-maps-new.png" alt="Google Maps" className="w-7 h-7" />
+                </a>
+              )}
             </div>
             <div className="relative">
               <button onClick={handleShare} className="flex items-center gap-2 text-sm font-semibold text-gray-700 bg-gray-100 px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors">
