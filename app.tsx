@@ -789,6 +789,7 @@ const App: React.FC = () => {
 
   const openEvents = async () => {
     setView('events');
+    await fetchPublicEvents();
   };
 
   // FunÃ§Ãµes para passeios & atividades - PÃšBLICO
@@ -1387,7 +1388,8 @@ const App: React.FC = () => {
     setPublicEventsLoading(true);
     setPublicEventsError(null);
     try {
-      const today = new Date().toISOString().slice(0, 10);
+      const now = new Date();
+      const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
       const { data, error } = await supabase
         .from('events')
         .select('id, title, date, time, location_id, local_text, description, banner_url, link, instagram_url, facebook_url, visible, sort_order')
