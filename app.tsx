@@ -3325,6 +3325,8 @@ const App: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">Logomarca (1 imagem, max. {MAX_FILE_MB}MB)</label>
+                      <p className="mt-1 text-xs text-gray-500">Tamanho ideal 300x300px máx. 1MB</p>
+                      <p>-</p>
                       <input
                         type="file"
                         accept="image/*"
