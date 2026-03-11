@@ -399,6 +399,7 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Logomarca</label>
+          <p className="mt-1 text-xs text-gray-500">Logomarca no tamanho 300x300px</p>
           <input
             type="file"
             accept="image/*"
@@ -416,7 +417,7 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Imagens (até 5)</label>
-          <p className="mt-1 text-xs text-gray-500">Imagens no tamanho 1000x500px</p>
+          <p className="mt-1 text-xs text-gray-500">Tamanho ideal 1000x500px com até 1mb cada</p>
           <input
             type="file"
             accept="image/*"
