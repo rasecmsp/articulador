@@ -81,12 +81,12 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
           .select('*')
           .eq('active', true)
           .order('sort_order', { ascending: true });
-        
+
         if (error) throw error;
-        
+
         const rows = (data || []) as PlanDB[];
         setPlans(rows);
-        
+
         // Define o primeiro plano como selecionado apenas se não houver plano selecionado
         if (rows.length > 0 && !selectedPlanId) {
           setSelectedPlanId(rows[0].id);
@@ -100,9 +100,9 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
         setPlansLoading(false);
       }
     };
-    
+
     void loadPlans();
-    
+
     // Limpa o estado quando o componente for desmontado
     return () => {
       setPlans([]);
@@ -119,7 +119,7 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
     setSaving(true);
     setError(null);
     setSuccess(null);
-    
+
     try {
       // Validação do plano
       if (!selectedPlanId) {
@@ -202,7 +202,7 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
       const { error: insErr } = await supabase
         .from('businesses')
         .insert(payload);
-        
+
       if (insErr) throw insErr;
 
       // Limpa o formulário
@@ -222,13 +222,13 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
       setPreviews([]);
       setLogoFile(null);
       setLogoPreview(null);
-      
+
       // Mantém o mesmo plano selecionado para o próximo cadastro
       if (plans.length > 0) {
         setSelectedPlanId(plans[0].id);
         setSelectedPlanSlug(plans[0].slug);
       }
-      
+
       setSuccess('Enviado com sucesso! Seu cadastro entrará na fila de aprovação.');
     } catch (err: any) {
       console.error('Erro ao enviar cadastro:', err);
@@ -266,23 +266,23 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
       <form onSubmit={handleSubmit} className="bg-white rounded shadow p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Nome do estabelecimento</label>
-          <input 
-            className="w-full border rounded px-3 py-2" 
-            value={name} 
-            onChange={e => setName(e.target.value)} 
-            required 
+          <input
+            className="w-full border rounded px-3 py-2"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">Categoria</label>
-          <select 
-            className="w-full border rounded px-3 py-2" 
-            value={categoryId} 
-            onChange={e => { 
-              setCategoryId(e.target.value); 
-              setSubcategoryId(''); 
-            }} 
+          <select
+            className="w-full border rounded px-3 py-2"
+            value={categoryId}
+            onChange={e => {
+              setCategoryId(e.target.value);
+              setSubcategoryId('');
+            }}
             required
           >
             <option value="">Selecione</option>
@@ -294,9 +294,9 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
 
         <div>
           <label className="block text-sm font-medium mb-1">Subcategoria</label>
-          <select 
-            className="w-full border rounded px-3 py-2" 
-            value={subcategoryId} 
+          <select
+            className="w-full border rounded px-3 py-2"
+            value={subcategoryId}
             onChange={e => setSubcategoryId(e.target.value)}
           >
             <option value="">Selecione</option>
@@ -308,9 +308,9 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
 
         <div>
           <label className="block text-sm font-medium mb-1">Local</label>
-          <select 
-            className="w-full border rounded px-3 py-2" 
-            value={locationId} 
+          <select
+            className="w-full border rounded px-3 py-2"
+            value={locationId}
             onChange={e => setLocationId(e.target.value)}
           >
             <option value="">Selecione</option>
@@ -322,67 +322,67 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
 
         <div>
           <label className="block text-sm font-medium mb-1">Telefone</label>
-          <input 
-            className="w-full border rounded px-3 py-2" 
-            value={phone} 
-            onChange={e => setPhone(e.target.value)} 
+          <input
+            className="w-full border rounded px-3 py-2"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">WhatsApp</label>
-          <input 
-            className="w-full border rounded px-3 py-2" 
-            value={whatsapp} 
-            onChange={e => setWhatsapp(e.target.value)} 
+          <input
+            className="w-full border rounded px-3 py-2"
+            value={whatsapp}
+            onChange={e => setWhatsapp(e.target.value)}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">Instagram (@)</label>
-          <input 
-            className="w-full border rounded px-3 py-2" 
-            value={instagram} 
-            onChange={e => setInstagram(e.target.value)} 
+          <input
+            className="w-full border rounded px-3 py-2"
+            value={instagram}
+            onChange={e => setInstagram(e.target.value)}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">Website</label>
-          <input 
-            className="w-full border rounded px-3 py-2" 
-            placeholder="https://exemplo.com" 
-            value={website} 
-            onChange={e => setWebsite(e.target.value)} 
+          <input
+            className="w-full border rounded px-3 py-2"
+            placeholder="https://exemplo.com"
+            value={website}
+            onChange={e => setWebsite(e.target.value)}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">TripAdvisor</label>
-          <input 
-            className="w-full border rounded px-3 py-2" 
-            placeholder="URL do TripAdvisor (opcional)" 
-            value={tripadvisor} 
-            onChange={e => setTripadvisor(e.target.value)} 
+          <input
+            className="w-full border rounded px-3 py-2"
+            placeholder="URL do TripAdvisor (opcional)"
+            value={tripadvisor}
+            onChange={e => setTripadvisor(e.target.value)}
           />
         </div>
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Endereço</label>
-          <input 
-            className="w-full border rounded px-3 py-2" 
-            value={address} 
-            onChange={e => setAddress(e.target.value)} 
+          <input
+            className="w-full border rounded px-3 py-2"
+            value={address}
+            onChange={e => setAddress(e.target.value)}
           />
         </div>
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Descrição</label>
-          <textarea 
-            className="w-full border rounded px-3 py-2" 
-            rows={4} 
-            value={description} 
-            onChange={e => setDescription(e.target.value)} 
+          <textarea
+            className="w-full border rounded px-3 py-2"
+            rows={4}
+            value={description}
+            onChange={e => setDescription(e.target.value)}
           />
         </div>
 
@@ -399,13 +399,13 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Logomarca</label>
-          <input 
-            type="file" 
-            accept="image/*" 
-            onChange={e => { 
-              const f = e.target.files?.[0] || null; 
-              setLogoFile(f); 
-            }} 
+          <input
+            type="file"
+            accept="image/*"
+            onChange={e => {
+              const f = e.target.files?.[0] || null;
+              setLogoFile(f);
+            }}
           />
           {logoPreview && (
             <div className="mt-2">
@@ -416,14 +416,15 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Imagens (até 5)</label>
-          <input 
-            type="file" 
-            accept="image/*" 
-            multiple 
-            onChange={e => { 
-              const list = Array.from(e.target.files || []).slice(0, 5); 
-              setFiles(list); 
-            }} 
+          <p className="mt-1 text-xs text-gray-500">Imagens no tamanho 1000x500px</p>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={e => {
+              const list = Array.from(e.target.files || []).slice(0, 5);
+              setFiles(list);
+            }}
           />
           {previews.length > 0 && (
             <div className="flex gap-2 mt-2 flex-wrap">
@@ -456,7 +457,7 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
                   ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.price)
                   : 'Consultar';
                 const checked = selectedPlanId === p.id;
-                
+
                 return (
                   <label
                     key={p.id}
@@ -502,9 +503,9 @@ const Anuncie: React.FC<AnuncieProps> = ({ categories, subcategories, locations,
         </div>
 
         <div className="md:col-span-2">
-          <button 
-            type="submit" 
-            disabled={saving} 
+          <button
+            type="submit"
+            disabled={saving}
             className="w-full md:w-auto bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-5 py-2 rounded disabled:opacity-60"
           >
             {saving ? 'Enviando...' : 'Enviar para aprovação'}
