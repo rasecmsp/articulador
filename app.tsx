@@ -3292,6 +3292,8 @@ const App: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">Fotos (até 5 imagens, max. {MAX_FILE_MB}MB cada)</label>
+                      <p className="mt-1 text-xs text-gray-500">Tamanho ideal 1470x980px máx. 1MB cada</p>
+                      <p>-</p>
                       <input
                         type="file"
                         accept="image/*"
