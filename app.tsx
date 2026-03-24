@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Carousel from './components/Carousel';
 import SearchBar from './components/SearchBar';
 import ActionButtons from './components/ActionButtons';
@@ -359,14 +359,8 @@ const App: React.FC = () => {
   const [planEditingId, setPlanEditingId] = useState<string | number | null>(null);
   const [planForm, setPlanForm] = useState<{ name: string; slug: string; months: number; price: number | null; active: boolean; sort_order: number | null; description: string | null }>({ name: '', slug: '', months: 6, price: null, active: true, sort_order: 0, description: '' });
 
-  useEffect(() => {
-    if (adminTab === 'plans' || adminTab === 'businesses') {
-      fetchPlans();
-    }
-    if (adminTab === 'guide') {
-      fetchGuideSettings();
-    }
-  }, [adminTab]);
+  // O useEffect abaixo ja lida com estas chamadas quando em adminTab.
+  // Removido para evitar redundancia.
 
   // Carrega configurações ao iniciar e aplica visualmente
   useEffect(() => {
@@ -787,9 +781,8 @@ const App: React.FC = () => {
     setView('photos');
   };
 
-  const openEvents = async () => {
+  const openEvents = () => {
     setView('events');
-    await fetchPublicEvents();
   };
 
   // FunÃ§Ãµes para passeios & atividades - PÃšBLICO
@@ -823,9 +816,8 @@ const App: React.FC = () => {
     }
   };
 
-  const openTours = async () => {
+  const openTours = () => {
     setView('tours');
-    await fetchPublicToursSections();
   };
 
   const openHistoryPublic = async () => {
@@ -928,8 +920,6 @@ const App: React.FC = () => {
       await fetchAdminBusinesses();
       await fetchPublicBusinesses();
       setEditingId(null);
-      await fetchPublicBusinesses();
-      await fetchPublicBusinesses();
     } catch (error: any) {
       setAdminError(error.message);
     }
@@ -1457,36 +1447,6 @@ const App: React.FC = () => {
     }
   };
 
-  // FunÃ§Ãµes para passeios & atividades - PÃšBLICO
-  const fetchPublicToursSections2 = async () => {
-    setToursLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('tours_sections')
-        .select('id, title, bullets, image_url, cta_text, cta_url')
-        .eq('visible', true)
-        .order('sort_order', { ascending: true })
-        .order('created_at', { ascending: true });
-      if (!error && Array.isArray(data)) {
-        setToursSections(
-          data.map((d: any) => ({
-            id: d.id,
-            title: d.title,
-            bullets: Array.isArray(d.bullets) ? d.bullets : [],
-            image_url: d.image_url,
-            cta_text: d.cta_text,
-            cta_url: d.cta_url,
-          }))
-        );
-      } else {
-        setToursSections([]);
-      }
-    } catch (err) {
-      setToursSections([]);
-    } finally {
-      setToursLoading(false);
-    }
-  };
 
 
   // FunÃ§Ãµes para useful info - PÃšBLICO
@@ -2959,17 +2919,15 @@ const App: React.FC = () => {
       if (adminTab === 'businesses') void fetchAdminTaxonomies();
       if (adminTab === 'events') void fetchEvents();
       if (adminTab === 'guide') void fetchGuideSettings();
+      if (adminTab === 'plans') void fetchPlans();
     }
   }, [view, isAdmin, adminTab]);
 
   useEffect(() => {
     if (view === 'useful') void fetchPublicUsefulInfo();
-    if (view === 'phones') {
-      void fetchCategories();
-      void fetchSubcategories(phonesCatId || undefined);
-      void fetchPublicPhones();
-    }
+    if (view === 'phones') void fetchPublicPhones();
     if (view === 'photos') void fetchPublicPhotos();
+    if (view === 'tours') void fetchPublicToursSections();
     if (view === 'historyPage') {
       setHistoryPublicLoading(true);
       setHistoryPublicError(null);
@@ -2977,7 +2935,7 @@ const App: React.FC = () => {
         .finally(() => setHistoryPublicLoading(false));
     }
     if (view === 'events') void fetchPublicEvents();
-  }, [view, phonesCatId]);
+  }, [view, phonesCatId, phonesSubId]); // added phonesCatId and phonesSubId as dependencies for fetchPublicPhones
 
   return (
     <div className="bg-orange-50 min-h-screen font-sans" style={{ backgroundColor: view === 'none' ? '#ebf7f6ff' : undefined }}>
@@ -4897,7 +4855,7 @@ const App: React.FC = () => {
                   <select
                     className="w-full border rounded px-3 py-2"
                     value={phonesCatId}
-                    onChange={async (e) => { const id = e.target.value; setPhonesCatId(id); setPhonesSubId(''); await fetchSubcategories(id || undefined); await fetchPublicPhones(); }}
+                    onChange={(e) => { setPhonesCatId(e.target.value); setPhonesSubId(''); }}
                   >
                     <option value="">Todas</option>
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -4908,7 +4866,7 @@ const App: React.FC = () => {
                   <select
                     className="w-full border rounded px-3 py-2"
                     value={phonesSubId}
-                    onChange={async (e) => { setPhonesSubId(e.target.value); await fetchPublicPhones(); }}
+                    onChange={(e) => { setPhonesSubId(e.target.value); }}
                     disabled={!phonesCatId}
                   >
                     <option value="">Todas</option>
@@ -4919,7 +4877,7 @@ const App: React.FC = () => {
                 </div>
                 <div className="flex items-end">
                   <button
-                    onClick={async () => { setPhonesCatId(''); setPhonesSubId(''); await fetchSubcategories(); await fetchPublicPhones(); }}
+                    onClick={() => { setPhonesCatId(''); setPhonesSubId(''); }}
                     className="w-full md:w-auto bg-white border px-3 py-2 rounded hover:bg-gray-50"
                   >
                     Limpar
@@ -5111,7 +5069,7 @@ const App: React.FC = () => {
                 {!homeCategoryId && (
                   <div className="flex flex-wrap justify-center gap-4">
                     <button
-                      onClick={async () => { setHomeCategoryId(''); setHomeSubcategoryId(''); setHomeLocationId(''); await fetchSubcategories(); }}
+                      onClick={() => { setHomeCategoryId(''); setHomeSubcategoryId(''); setHomeLocationId(''); }}
                       className={`h-12 px-6 rounded-full font-bold text-base shadow-md inline-flex items-center justify-center text-white bg-slate-800`}
                     >
                       Todas as Categorias
@@ -5119,7 +5077,7 @@ const App: React.FC = () => {
                     {visibleCategories.map((c, idx) => (
                       <button
                         key={c.id}
-                        onClick={async () => { setHomeCategoryId(c.id); setHomeSubcategoryId(''); setHomeLocationId(''); await fetchSubcategories(c.id); }}
+                        onClick={() => { setHomeCategoryId(c.id); setHomeSubcategoryId(''); setHomeLocationId(''); }}
                         className={`h-12 px-6 rounded-full font-bold text-base shadow-md inline-flex items-center justify-center transition text-white ${['bg-orange-500', 'bg-yellow-400 text-slate-900', 'bg-cyan-500', 'bg-teal-500'][idx % 4]}`}
                       >
                         {c.name}
@@ -5134,7 +5092,7 @@ const App: React.FC = () => {
                     <div className="flex flex-wrap gap-2 justify-center items-center">
                       <span className={`h-12 px-6 rounded-full font-bold text-base shadow-md inline-flex items-center justify-center ${['bg-orange-500 text-white', 'bg-yellow-400 text-slate-900', 'bg-cyan-500 text-white', 'bg-teal-500 text-white'][Math.max(0, categories.findIndex(c => c.id === homeCategoryId)) % 4]}`}>{categories.find(c => c.id === homeCategoryId)?.name}</span>
                       <button
-                        onClick={async () => { setHomeCategoryId(''); setHomeSubcategoryId(''); setHomeLocationId(''); await fetchSubcategories(); }}
+                        onClick={() => { setHomeCategoryId(''); setHomeSubcategoryId(''); setHomeLocationId(''); }}
                         className="h-12 px-6 rounded-full font-bold text-base shadow-md inline-flex items-center justify-center bg-white text-gray-700 border hover:bg-gray-50"
                       >
                         Voltar
