@@ -12,6 +12,38 @@ import Anuncie from './components/anuncie';
 import ComoChegar from './components/ComoChegar';
 import AdminComoChegar from './components/AdminComoChegar';
 
+const CACHE_PREFIX = 'articulador_cache_';
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutos
+
+function getCached<T>(key: string): T | null {
+  try {
+    const item = sessionStorage.getItem(CACHE_PREFIX + key);
+    if (!item) return null;
+    const { data, timestamp } = JSON.parse(item);
+    if (Date.now() - timestamp > CACHE_TTL) {
+      sessionStorage.removeItem(CACHE_PREFIX + key);
+      return null;
+    }
+    return data as T;
+  } catch {
+    return null;
+  }
+}
+
+const setCached = (key: string, data: any) => {
+  try {
+    sessionStorage.setItem(CACHE_PREFIX + key, JSON.stringify({ data, timestamp: Date.now() }));
+  } catch (e) {
+    console.warn('Falha ao salvar no cache:', e);
+  }
+};
+
+const invalidateCache = () => {
+  Object.keys(sessionStorage).forEach(key => {
+    if (key.startsWith(CACHE_PREFIX)) sessionStorage.removeItem(key);
+  });
+};
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
@@ -238,18 +270,28 @@ const App: React.FC = () => {
   const [toursLoading, setToursLoading] = useState(false);
 
   const fetchGuideSettings = async () => {
+    const cached = getCached<any>('guide_settings');
+    if (cached && view !== 'admin') {
+      setGuide(cached);
+      return;
+    }
+
     setGuideLoading(true); setGuideError(null);
     try {
       const { data, error } = await supabase.from('guide_settings').select('*').limit(1).maybeSingle();
       if (error && error.code !== 'PGRST116') setGuideError(error.message);
-      else if (data) setGuide({
-        app_name: data.app_name || 'O Articulador',
-        whatsapp: data.whatsapp || '',
-        favicon_url: data.favicon_url || '',
-        splash_url: data.splash_url || '',
-        app_icon_url: data.app_icon_url || '',
-        share_image_url: data.share_image_url || ''
-      });
+      else if (data) {
+        const payload = {
+          app_name: data.app_name || 'O Articulador',
+          whatsapp: data.whatsapp || '',
+          favicon_url: data.favicon_url || '',
+          splash_url: data.splash_url || '',
+          app_icon_url: data.app_icon_url || '',
+          share_image_url: data.share_image_url || ''
+        };
+        setGuide(payload);
+        setCached('guide_settings', payload);
+      }
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -314,6 +356,7 @@ const App: React.FC = () => {
 
       // Recarrega do banco para refletir exatamente o persistido
       await fetchGuideSettings();
+      invalidateCache();
       alert('Dados do Guia salvos com sucesso.');
       setFaviconFile(null); setSplashFile(null); setIconFile(null); setShareImageFile(null);
     } catch (err: any) {
@@ -787,6 +830,12 @@ const App: React.FC = () => {
 
   // FunÃ§Ãµes para passeios & atividades - PÃšBLICO
   const fetchPublicToursSections = async () => {
+    const cached = getCached<any[]>('tours_sections');
+    if (cached) {
+      setToursSections(cached);
+      return;
+    }
+
     setToursLoading(true);
     try {
       const { data, error } = await supabase
@@ -796,16 +845,16 @@ const App: React.FC = () => {
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: true });
       if (!error && Array.isArray(data)) {
-        setToursSections(
-          data.map((d: any) => ({
-            id: d.id,
-            title: d.title,
-            bullets: Array.isArray(d.bullets) ? d.bullets : [],
-            image_url: d.image_url,
-            cta_text: d.cta_text,
-            cta_url: d.cta_url,
-          }))
-        );
+        const mapped = data.map((d: any) => ({
+          id: d.id,
+          title: d.title,
+          bullets: Array.isArray(d.bullets) ? d.bullets : [],
+          image_url: d.image_url,
+          cta_text: d.cta_text,
+          cta_url: d.cta_url,
+        }));
+        setToursSections(mapped);
+        setCached('tours_sections', mapped);
       } else {
         setToursSections([]);
       }
@@ -919,6 +968,7 @@ const App: React.FC = () => {
 
       await fetchAdminBusinesses();
       await fetchPublicBusinesses();
+      invalidateCache();
       setEditingId(null);
     } catch (error: any) {
       setAdminError(error.message);
@@ -985,6 +1035,7 @@ const App: React.FC = () => {
       if (error) throw error;
       await fetchAdminBusinesses();
       await fetchPublicBusinesses();
+      invalidateCache();
     } catch (error: any) {
       setAdminError(error.message);
     }
@@ -1088,6 +1139,7 @@ const App: React.FC = () => {
       setFormSubcategoryId('');
       setFormLocationId('');
       await fetchAdminBusinesses();
+      invalidateCache();
     } catch (error: any) {
       setAdminError(error.message);
     } finally {
@@ -1171,6 +1223,7 @@ const App: React.FC = () => {
       setFormSubcategoryId('');
       setFormLocationId('');
       await fetchAdminBusinesses();
+      invalidateCache();
     } catch (error: any) {
       setAdminError(error.message);
     } finally {
@@ -1291,70 +1344,79 @@ const App: React.FC = () => {
     }
   };
 
-  // FunÃ§Ãµes para public businesses
   async function fetchPublicBusinesses() {
+    const cached = getCached<any[]>('public_businesses');
+    if (cached && !isAdmin) {
+      const shuffled = [...cached];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      setPublicBusinesses(shuffled);
+      setPublicBusinessesRaw(cached);
+      return;
+    }
+
     setPublicLoading(true);
     setPublicError(null);
     try {
-      const { data, error } = await supabase
+      const { data: raw, error } = await supabase
         .from('businesses')
-        .select('*')
-        .eq('status', 'approved')
-        .order('name');
+        .select(`
+          *,
+          rating_stats:reviews(rating)
+        `)
+        .eq('status', 'approved');
 
       if (error) throw error;
-      setPublicBusinessesRaw(data || []);
 
-      // Convert to Business type
-      const businesses: Business[] = (data ?? []).map((b: any) => {
-        const imagesArray =
-          Array.isArray(b.images)
-            ? b.images.filter((s: any) => typeof s === 'string' && s)
-            : (typeof b.images === 'string' && b.images ? [b.images] : []);
+      const businesses: Business[] = (raw || []).map((b: any) => {
+        const reviews = b.rating_stats || [];
+        const avg = reviews.length > 0
+          ? reviews.reduce((acc: number, r: any) => acc + (Number(r.rating) || 0), 0) / reviews.length
+          : 0;
 
         return {
           id: b.id,
-          name: b.name ?? '',
-          category: b.category ?? '',
-          description: b.description ?? '',
-          address: b.address ?? '',
-          phone: b.phone ?? '',
-          whatsapp: b.whatsapp ?? '',
-          instagram: b.instagram ?? '',
-          website: b.website ?? '',
-          map_url: b.map_url ?? '',
-          tripadvisor: b.tripadvisor ?? '',
-          logo: (typeof b.logo === 'string' && b.logo) ? b.logo : '',
-          images: imagesArray.length > 0 ? imagesArray : [PUBLIC_PLACEHOLDER_IMG],
-          rating: Number(b.rating ?? 0),
-          reviewCount: Number(b.review_count ?? 0),
-
-          // IDs para filtros (usados no app)
-          category_id: b.category_id ?? null,
-          subcategory_id: b.subcategory_id ?? null,
-          location_id: b.location_id ?? null,
-
-          // Campos requeridos pelo tipo Business
-          tags: Array.isArray(b.tags) ? b.tags : [],
-          isPremium: Boolean(b.is_premium ?? b.isPremium ?? false),
-          reviews: Array.isArray(b.reviews) ? b.reviews : [],
-        } as Business;
+          name: b.name,
+          category: b.category,
+          description: b.description || '',
+          images: Array.isArray(b.images) && b.images.length > 0 ? b.images : [PUBLIC_PLACEHOLDER_IMG],
+          logo: b.logo || null,
+          rating: Number(avg.toFixed(1)),
+          reviewCount: reviews.length,
+          reviews: [], // Requerido pelo tipo Business
+          address: b.address || '',
+          phone: b.phone || '',
+          whatsapp: b.whatsapp || '',
+          instagram: b.instagram || '',
+          tripadvisor: b.tripadvisor || '',
+          website: b.website || '',
+          map_url: b.map_url || '',
+          isPremium: !!b.plan && b.plan !== 'basico' && b.plan !== 'gratuito',
+          category_id: b.category_id,
+          subcategory_id: b.subcategory_id,
+          location_id: b.location_id,
+          tags: b.tags || []
+        };
       });
 
-      // Shuffle for random display on refresh
-      for (let i = businesses.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [businesses[i], businesses[j]] = [businesses[j], businesses[i]];
-      }
+      setCached('public_businesses', businesses);
+      setPublicBusinessesRaw(raw);
 
-      setPublicBusinesses(businesses);
+      const shuffled = [...businesses];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      setPublicBusinesses(shuffled);
     } catch (error: any) {
+      console.error('Erro ao buscar empresas:', error);
       setPublicError(error.message);
     } finally {
       setPublicLoading(false);
     }
-  };
-
+  }
   // FunÃ§Ãµes para phones - PÃšBLICO
   const fetchPublicPhones = async () => {
     setPublicPhonesLoading(true);
@@ -1568,18 +1630,23 @@ const App: React.FC = () => {
 
   // Funções para carousel
   const fetchPublicCarouselItems = async () => {
+    const cached = getCached<CarouselItemDB[]>('carousel_public');
+    if (cached) {
+      setCarouselPublicItems(cached);
+      return;
+    }
+    setCarouselLoading(true);
     try {
       const { data, error } = await supabase
         .from('carousel_items')
         .select('*')
         .eq('active', true)
         .order('sort_order', { ascending: true });
-
       if (error) throw error;
-      setCarouselPublicItems(data as CarouselItemDB[]);
-    } catch (error: any) {
-      console.error('Erro ao carregar carousel:', error);
-    }
+      setCarouselPublicItems(data || []);
+      setCached('carousel_public', data);
+    } catch (err: any) { setCarouselError(err.message); }
+    finally { setCarouselLoading(false); }
   };
 
   const fetchAdminCarouselItems = async () => {
@@ -2246,45 +2313,51 @@ const App: React.FC = () => {
   };
 
   const fetchCategories = async () => {
+    const cached = getCached<CategoryDB[]>('categories');
+    if (cached) {
+      setCategories(cached);
+      return;
+    }
+    setCatLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('sort_order')
-        .order('name');
-
+      const { data, error } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
       if (error) throw error;
       setCategories(data || []);
-    } catch (error: any) {
-      setCatError(error.message);
-    }
+      setCached('categories', data);
+    } catch (err: any) { setCatError(err.message); }
+    finally { setCatLoading(false); }
   };
 
-  const fetchSubcategories = async (categoryId?: string) => {
-    try {
-      let query = supabase.from('subcategories').select('*');
-
-      if (categoryId) {
-        query = query.eq('category_id', categoryId);
+  const fetchSubcategories = async (catId?: string) => {
+    // Only use cache if NOT filtering by catId specifically via DB
+    if (!catId) {
+      const cached = getCached<SubcategoryDB[]>('subcategories_all');
+      if (cached) {
+        setSubcategories(cached);
+        return;
       }
-
-      const { data, error } = await query.order('sort_order').order('name');
-
+    }
+    setCatLoading(true);
+    try {
+      let query = supabase.from('subcategories').select('*').order('sort_order', { ascending: true });
+      if (catId) query = query.eq('category_id', catId);
+      const { data, error } = await query;
       if (error) throw error;
       setSubcategories(data || []);
-    } catch (error: any) {
-      setCatError(error.message);
-    }
+      if (!catId) setCached('subcategories_all', data);
+    } catch (err: any) { setCatError(err.message); }
+    finally { setCatLoading(false); }
   };
 
   const fetchLocations = async () => {
+    const cached = getCached<LocationDB[]>('locations');
+    if (cached) {
+      setLocations(cached);
+      return;
+    }
+    setCatLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('locations')
-        .select('*')
-        .order('sort_order')
-        .order('name');
-
+      const { data, error } = await supabase.from('locations').select('*').order('sort_order', { ascending: true });
       if (error) throw error;
       setLocations(data || []);
     } catch (error: any) {

@@ -14,7 +14,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business, onSelect }) => {
   return (
     <button onClick={() => onSelect(business)} className="w-full text-left bg-white rounded-xl shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
       <div className="relative">
-        <img className="h-56 w-full object-cover" src={business.images[0]} alt={business.name} />
+        <img className="h-56 w-full object-cover" src={business.images[0]} alt={business.name} loading="lazy" />
         {business.isPremium && (
           <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full uppercase">
             Premium
@@ -23,9 +23,9 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business, onSelect }) => {
         {/* Área circular para logomarca */}
         <div className="absolute top-44 right-4 w-24 h-24 bg-white rounded-full border-2 border-gray-200 shadow-lg flex items-center justify-center overflow-hidden">
           {business.logo ? (
-            <img 
-              src={business.logo} 
-              alt={`Logo ${business.name}`} 
+            <img
+              src={business.logo}
+              alt={`Logo ${business.name}`}
               className="w-full h-full object-cover rounded-full"
             />
           ) : (
